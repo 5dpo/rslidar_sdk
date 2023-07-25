@@ -96,6 +96,21 @@ int main(int argc, char** argv)
   {
     config_path = path;
   }
+#elif ROS2_FOUND
+
+  RS_MSG << "------------------------------------------------------" << RS_REND;
+  RS_MSG << "#arg: " << argc << RS_REND;
+
+  for(int i=0; i < argc; i++)
+  {
+    RS_MSG << "[" << i << "]: " << argv[i] << RS_REND;
+  }
+
+  if (argc >= 2)
+  {
+    config_path = argv[1];
+  }
+
 #endif
 
   YAML::Node config;
