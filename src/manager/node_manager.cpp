@@ -40,7 +40,7 @@ namespace robosense
 namespace lidar
 {
 
-void NodeManager::init(const YAML::Node& config)
+void NodeManager::init(const YAML::Node& config, const std::string& param_ns)
 {
   YAML::Node common_config = yamlSubNodeAbort(config, "common");
 
@@ -107,8 +107,23 @@ void NodeManager::init(const YAML::Node& config)
         exit(-1);
     }
 
+    if (!param_ns.empty())
+    {
+      lidar_config[i]["ros"]["ros_frame_id"] =
+          param_ns + "/" + lidar_config[i]["ros"]["ros_frame_id"].as<std::string>();
+    }
+
     if (send_packet_ros)
     {
+      if (!param_ns.empty())
+      {
+        lidar_config[i]["ros"]["ros_send_packet_topic"] =
+            "/" + param_ns + "/" + lidar_config[i]["ros"]["ros_send_packet_topic"].as<std::string>();
+
+        lidar_config[i]["ros"]["ros_recv_packet_topic"] =
+            "/" + param_ns + "/" + lidar_config[i]["ros"]["ros_recv_packet_topic"].as<std::string>();
+      }
+
       RS_DEBUG << "------------------------------------------------------" << RS_REND;
       RS_DEBUG << "Send Packets To : ROS" << RS_REND;
       RS_DEBUG << "Msop Topic: " << lidar_config[i]["ros"]["ros_send_packet_topic"].as<std::string>() << RS_REND;
@@ -121,6 +136,12 @@ void NodeManager::init(const YAML::Node& config)
 
     if (send_point_cloud_ros)
     {
+      if (!param_ns.empty())
+      {
+        lidar_config[i]["ros"]["ros_send_point_cloud_topic"] =
+            "/" + param_ns + "/" + lidar_config[i]["ros"]["ros_send_point_cloud_topic"].as<std::string>();
+      }
+
       RS_DEBUG << "------------------------------------------------------" << RS_REND;
       RS_DEBUG << "Send PointCloud To : ROS" << RS_REND;
       RS_DEBUG << "PointCloud Topic: " << lidar_config[i]["ros"]["ros_send_point_cloud_topic"].as<std::string>()

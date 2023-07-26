@@ -44,7 +44,7 @@ class NodeManager
 {
 public:
 
-  void init(const YAML::Node& config);
+  void init(const YAML::Node& config, const std::string& param_ns);
   void start();
   void stop();
 

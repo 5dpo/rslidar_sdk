@@ -78,7 +78,8 @@ int main(int argc, char** argv)
   rclcpp::init(argc, argv);
 #endif
 
-  std::string config_path;
+  std::string config_path{""};
+  std::string param_ns{""};
 
 #ifdef RUN_IN_ROS_WORKSPACE
    config_path = ros::package::getPath("rslidar_sdk");
@@ -99,6 +100,7 @@ int main(int argc, char** argv)
 #elif ROS2_FOUND
 
   RS_MSG << "------------------------------------------------------" << RS_REND;
+  RS_MSG << "------------------------------------------------------" << RS_REND;
   RS_MSG << "#arg: " << argc << RS_REND;
 
   for(int i=0; i < argc; i++)
@@ -106,10 +108,21 @@ int main(int argc, char** argv)
     RS_MSG << "[" << i << "]: " << argv[i] << RS_REND;
   }
 
-  if (argc >= 2)
+  if (argc >= 5)
   {
-    config_path = argv[1];
+    if ((std::string(argv[2]).compare("--ros-args") == 0) ||
+        (std::string(argv[3]).compare("--ros-args") == 0))
+    {
+      config_path = argv[1];
+    }
+    if ((argc >= 6) && (std::string(argv[3]).compare("--ros-args") == 0))
+    {
+      param_ns = argv[2];
+    }
   }
+
+  RS_MSG << "config_path: " << config_path << RS_REND;
+  RS_MSG << "param_ns: " << param_ns << RS_REND;
 
 #endif
 
@@ -126,7 +139,7 @@ int main(int argc, char** argv)
   }
 
   std::shared_ptr<NodeManager> demo_ptr = std::make_shared<NodeManager>();
-  demo_ptr->init(config);
+  demo_ptr->init(config, param_ns);
   demo_ptr->start();
 
   RS_MSG << "RoboSense-LiDAR-Driver is running....." << RS_REND;
